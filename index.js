@@ -146,7 +146,7 @@ Barrels.prototype.populate = function(collections, done, autoAssociations) {
         // Insert all the fixture items
         that.idMap[modelName] = [];
         var fixtureObjects = _.cloneDeep(that.data[modelName]);
-        async.each(fixtureObjects, function(item, nextItem) {
+        async.forEachOf(fixtureObjects, function(item, index, nextItem) {
           // Item position in the file
           var itemIndex = fixtureObjects.indexOf(item);
 
@@ -167,6 +167,10 @@ Barrels.prototype.populate = function(collections, done, autoAssociations) {
                 if (!that.idMap[associatedModelName])
                   return nextItem(new Error('Please provide a loading order acceptable for required associations'));
                 item[alias] = that.idMap[associatedModelName][item[alias] - 1];
+
+                if (!_.isFinite(item[alias])) {
+                  item[alias] = that.idMap[associatedModelName][index];
+                }
               }
             } else if (autoAssociations) {
               // The order is not important, so we can strip
