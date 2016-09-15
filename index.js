@@ -164,12 +164,16 @@ Barrels.prototype.populate = function(collections, done, autoAssociations) {
                   item[alias][i] = that.idMap[collectionName][item[alias][i] - 1];
                 }
               } else if (associatedModelName) {
-                if (!that.idMap[associatedModelName])
+                if (!that.idMap[associatedModelName]) {
                   return nextItem(new Error('Please provide a loading order acceptable for required associations'));
-                item[alias] = that.idMap[associatedModelName][item[alias] - 1];
+                }
 
                 if (!_.isFinite(item[alias])) {
-                  item[alias] = that.idMap[associatedModelName][index];
+                  var idx = that.idMap[associatedModelName].indexOf(item[alias]);
+                  var asn = that.idMap[associatedModelName];
+                  item[alias] = asn[index] || asn[idx];
+                } else {
+                  item[alias] = that.idMap[associatedModelName][item[alias] - 1];
                 }
               }
             } else if (autoAssociations) {
